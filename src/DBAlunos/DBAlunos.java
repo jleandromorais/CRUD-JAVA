@@ -1,8 +1,8 @@
 package DBAlunos;
 
 import DB.DB;
+import DB.DbIntegrityException;
 import DB.DbException;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,21 +29,13 @@ public class DBAlunos {
                 System.out.println("Nome: " + rs.getString("name"));
                 System.out.println("Nota: " + rs.getDouble("nota"));
                 System.out.println("Turma: " + rs.getString("turma"));
-                System.out.println("Aprovado: " + rs.getString("aprovado"));
+                System.out.println("Aprovado: " + rs.getString("materia"));
                 System.out.println("---------------------------");
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (st != null) st.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
-    }
+        }
 
     // Método para inserir novos dados
     public static void insertdados(DadosAlunos dados) {
@@ -130,4 +122,31 @@ public class DBAlunos {
             }
         }
     }
+    public static double MostrarMedia(){
+        Connection conn=null;
+        PreparedStatement st=null;
+        ResultSet rs=null;
+
+        try{
+            conn=DB.getConnection();
+            String sql="SELECT AVG(nota) AS media_notas FROM aluno";
+            st=conn.prepareStatement(sql);
+            rs=st.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("media_notas");
+            }
+            return 0;
+        } catch (SQLException e) {
+            throw new DbException("Erro ao calcular a média: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (st != null) st.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
+

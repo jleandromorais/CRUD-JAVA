@@ -30,6 +30,7 @@ public class ProfessorService implements CrudOperations {
 
     @Override
     public void listar() {
+        DBProfe vertodos= new DBProfe();
         vertodos.listar();
 
     }
@@ -90,11 +91,19 @@ public class ProfessorService implements CrudOperations {
 
         @Override
     public void remover(Scanner sc) {
-        DBProfe vertodos=new DBProfe();
         vertodos.listar();
         System.out.println("Digite o ID que você quer remover:");
         int id = sc.nextInt();
         DBProfe.removerProfessor(id);
+    }
+    public  void  mudarSalario(Scanner sc){
+
+        System.out.println("Digite o ID que você quer mudar o salario:");
+        int id = sc.nextInt();
+        System.out.println("Digite o novo salario:");
+        double salario= sc.nextDouble();
+        DBProfe.mudarSalario(id,salario);
+
     }
 }
 

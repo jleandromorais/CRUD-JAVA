@@ -1,6 +1,7 @@
-package CrudOperations;
-
-import DBAlunos.DBAlunos;
+package DBAlunos;
+import DB.DB;
+import CrudOperations.CrudOperations;
+import  DB.DbException;
 
 import java.util.Scanner;
 
@@ -83,6 +84,10 @@ public class AlunoService implements CrudOperations {
         System.out.println("Digite o ID que você quer remover:");
         int id = sc.nextInt();
         DBAlunos.remove(id);
+    }
+    public void Vermedia(){
+        System.out.println("A media dos alunos é:"+ DBAlunos.MostrarMedia());
+
     }
 
 }

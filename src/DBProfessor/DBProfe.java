@@ -2,13 +2,11 @@ package DBProfessor;
 
 import DB.DB;
 import DB.DbException;
+import  DB.DbIntegrityException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
-public class DBProfe {
+public class DBProfe  {
 
     // Método para adicionar um professor
     public static void adicionarProf(DadosProfessor dadosProfessor){
@@ -42,16 +40,17 @@ public class DBProfe {
     // Método para listar os professores
     public void listar() {
         Connection conn = null;
-        PreparedStatement st = null;
+        Statement st = null;
         ResultSet rs = null;
 
         try {
             conn = DB.getConnection();
-            String sql = "SELECT * FROM funcionarios";
-            st = conn.prepareStatement(sql);
-            rs = st.executeQuery();
+            st = conn.createStatement();  // Usando Statement ao invés de PreparedStatement
+            rs = st.executeQuery("SELECT * FROM funcionarios");  // Consulta todos os registros
 
+            // Loop para iterar sobre os resultados
             while (rs.next()) {
+                // Imprime os dados de cada registro
                 System.out.println("ID: " + rs.getInt("id"));
                 System.out.println("Nome: " + rs.getString("nome"));
                 System.out.println("Materia: " + rs.getString("materia"));
@@ -59,15 +58,8 @@ public class DBProfe {
                 System.out.println("---------------------------");
             }
         } catch (SQLException e) {
-            throw new DbException("Erro ao listar: " + e.getMessage());
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (st != null) st.close();
-                if (conn != null) conn.close(); // Certifique-se de sempre fechar
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            System.out.println("Erro ao listar professores: " + e.getMessage());
+            e.printStackTrace();  // Mostrar o stack trace para entender melhor o erro
         }
     }
 
@@ -121,13 +113,13 @@ public class DBProfe {
                 return;
             }
 
-            // SQL ajustado para a tabela 'funcionarios' e seus campos
+
             String sql = "UPDATE funcionarios SET " + campo + " = ? WHERE id = ?";
             st = conn.prepareStatement(sql);
-            st.setString(1, novoValor); // Define o novo valor para o campo
-            st.setInt(2, id); // Define o ID do professor que será atualizado
+            st.setString(1, novoValor);
+            st.setInt(2, id);
 
-            // Executa a atualização
+
             int linhasAfetadas = st.executeUpdate();
 
             if (linhasAfetadas > 0) {
@@ -140,6 +132,37 @@ public class DBProfe {
             System.out.println("Erro SQL: " + e.getMessage());
             e.printStackTrace();
         } finally {
+            try {
+                // Fechar a conexão e o PreparedStatement
+                if (st != null) st.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public static void mudarSalario(Integer ip,Double salario) {
+        Connection conn=null;
+        PreparedStatement st=null;
+
+        try {
+            conn=DB.getConnection();
+            String sql="UPDATE funcionarios SET salario= ? WHERE id=?";
+            st = conn.prepareStatement(sql);
+                    st.setDouble(1,salario);
+                    st.setInt(2,ip);
+            int linhasAfetadas = st.executeUpdate();
+
+            if (linhasAfetadas > 0) {
+                System.out.println("Atualização realizada com sucesso! Linhas afetadas: " + linhasAfetadas);
+            } else {
+                System.out.println("Erro: Nenhum registro encontrado com o ID fornecido.");
+            }
+        }
+        catch (SQLException e){
+           throw new DbException(e.getMessage());
+        }
+        finally {
             try {
                 // Fechar a conexão e o PreparedStatement
                 if (st != null) st.close();
